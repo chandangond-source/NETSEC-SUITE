@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NetSec Suite — Network Security Learning Lab</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #030b0f;
+    --panel: #071520;
+    --border: #0f4a6a;
+    --accent: #00d4ff;
+    --accent2: #00ff88;
+    --accent3: #ff4d6d;
+    --warn: #ffb347;
+    --text: #c8e8f0;
+    --muted: #4a7a8a;
+    --glow: 0 0 12px #00d4ff55;
+    --glow2: 0 0 12px #00ff8855;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 15px;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  /* Grid BG */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image:
+      linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+   /* Profile section design */
+
+   .profile-card{
+      
+      background:#030b0f;
+      width:100%;
+      padding:25px;
+      border-radius:15px;
+      text-align:center;
+      box-shadow:0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    .profile-card img{
+      width:200px;
+      height:200px;
+      border-radius:50%;
+      object-fit:cover;
+      border:4px solid #007bff;
+      margin-bottom:15px;
+    }
+
+    .profile-card h2{
+      
+      color:white;
+      margin-bottom:8px;
+    }
+
+    .profile-card p{
+      width: 80%;
+      padding-left: 20%;
+      color:#c8e8f0;
+      font-size:16px;
+      margin-bottom:15px;
+    }
+
+    .btn{
+      display:inline-block;
+      padding:10px 20px;
+      background:#007bff;
+      color:white;
+      text-decoration:none;
+      border-radius:8px;
+      transition:0.3s;
+    }
+
+    .btn:hover{
+      background:#0056b3;
+    }
+
+
+
+  #app { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 16px; }
+
+  /* HEADER */
+  header { text-align: center; padding: 24px 0 20px; }
+  header h1 {
+    font-family: 'Orbitron', monospace;
+    font-size: clamp(22px, 5vw, 42px);
+    color: var(--accent);
+    text-shadow: 0 0 30px #00d4ff88;
+    letter-spacing: 3px;
+  }
+  header p { color: var(--muted); font-family: 'Share Tech Mono'; font-size: 12px; margin-top: 6px; }
+
+  /* TABS */
+  .tabs {
+    display: flex; gap: 6px; margin: 20px 0 16px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 0; flex-wrap: wrap;
+  }
+  .tab {
+    padding: 10px 18px; cursor: pointer;
+    font-family: 'Orbitron', monospace;
+    font-size: 11px; font-weight: 700;
+    color: var(--muted);
+    border: 1px solid transparent;
+    border-bottom: none;
+    border-radius: 6px 6px 0 0;
+    transition: all 0.2s;
+    background: transparent;
+    letter-spacing: 1px;
+  }
+  .tab:hover { color: var(--accent); border-color: var(--border); }
+  .tab.active {
+    color: var(--accent); background: var(--panel);
+    border-color: var(--border);
+    border-bottom: 1px solid var(--panel);
+    margin-bottom: -1px;
+    box-shadow: var(--glow);
+  }
+
+  /* PANELS */
+  .panel { display: none; }
+  .panel.active { display: block; animation: fadeIn 0.3s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+  /* CARD */
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+  .card-title {
+    font-family: 'Orbitron', monospace;
+    font-size: 13px; color: var(--accent);
+    letter-spacing: 2px; margin-bottom: 14px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent2); box-shadow: var(--glow2); display: inline-block; }
+
+  /* INPUTS */
+  input, select {
+    background: #0a1e2b; border: 1px solid var(--border);
+    color: var(--text); padding: 9px 14px;
+    border-radius: 6px; font-family: 'Share Tech Mono';
+    font-size: 13px; outline: none; width: 100%;
+    transition: border-color 0.2s;
+  }
+  input:focus, select:focus { border-color: var(--accent); box-shadow: var(--glow); }
+  .row { display: flex; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
+  .row input, .row select { flex: 1; min-width: 120px; }
+
+  /* BUTTONS */
+  btn, .btn {
+    display: inline-block; padding: 10px 22px;
+    font-family: 'Orbitron', monospace; font-size: 11px;
+    font-weight: 700; letter-spacing: 2px;
+    cursor: pointer; border-radius: 6px;
+    border: none; transition: all 0.2s;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, #00aacc, #0077aa);
+    color: #fff; box-shadow: var(--glow);
+  }
+  .btn-primary:hover { background: linear-gradient(135deg, #00d4ff, #0099cc); transform: translateY(-1px); }
+  .btn-danger {
+    background: linear-gradient(135deg, #cc2244, #991133);
+    color: #fff; box-shadow: 0 0 12px #ff4d6d55;
+  }
+  .btn-danger:hover { background: linear-gradient(135deg, #ff4d6d, #cc2244); }
+  .btn-success {
+    background: linear-gradient(135deg, #007744, #005533);
+    color: #fff; box-shadow: var(--glow2);
+  }
+  .btn-success:hover { background: linear-gradient(135deg, #00ff88, #00cc66); color: #000; }
+  .btn-warn {
+    background: linear-gradient(135deg, #aa6600, #885500);
+    color: #fff;
+  }
+
+  /* TERMINAL OUTPUT */
+  .terminal {
+    background: #020c10; border: 1px solid var(--border);
+    border-radius: 8px; padding: 14px;
+    font-family: 'Share Tech Mono'; font-size: 12px;
+    line-height: 1.7; min-height: 140px;
+    max-height: 320px; overflow-y: auto;
+    white-space: pre-wrap; word-break: break-all;
+  }
+  .terminal .ok { color: var(--accent2); }
+  .terminal .warn { color: var(--warn); }
+  .terminal .err { color: var(--accent3); }
+  .terminal .info { color: var(--accent); }
+  .terminal .dim { color: var(--muted); }
+
+  /* STATUS BADGES */
+  .badge {
+    display: inline-block; padding: 2px 10px;
+    border-radius: 30px; font-size: 11px;
+    font-family: 'Share Tech Mono';
+  }
+  .badge-open { background: #00ff8820; color: var(--accent2); border: 1px solid var(--accent2); }
+  .badge-closed { background: #ff4d6d20; color: var(--accent3); border: 1px solid var(--accent3); }
+  .badge-filtered { background: #ffb34720; color: var(--warn); border: 1px solid var(--warn); }
+
+  /* TABLES */
+  table { width: 100%; border-collapse: collapse; font-family: 'Share Tech Mono'; font-size: 12px; }
+  th { color: var(--accent); padding: 8px 12px; text-align: left; border-bottom: 1px solid var(--border); font-family: 'Orbitron'; font-size: 10px; }
+  td { padding: 7px 12px; border-bottom: 1px solid #0f2530; }
+  tr:hover td { background: #0a1e2b; }
+
+  /* METRICS GRID */
+  .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 16px; }
+  .metric {
+    background: #0a1e2b; border: 1px solid var(--border);
+    border-radius: 8px; padding: 14px; text-align: center;
+  }
+  .metric .val { font-family: 'Orbitron'; font-size: 24px; color: var(--accent2); }
+  .metric .lbl { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+  /* FIREWALL */
+  .rule {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 14px; border: 1px solid var(--border);
+    border-radius: 8px; margin-bottom: 8px; background: #0a1e2b;
+    flex-wrap: wrap;
+  }
+  .rule .rule-num { color: var(--muted); font-family: 'Share Tech Mono'; min-width: 28px; }
+  .rule select { flex: 1; min-width: 80px; padding: 5px 8px; }
+  .rule input { flex: 2; min-width: 100px; padding: 5px 8px; }
+  .rule .del-btn {
+    background: none; border: 1px solid var(--accent3); color: var(--accent3);
+    padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 12px;
+  }
+  .rule .del-btn:hover { background: var(--accent3); color: #fff; }
+  .rule-allow { border-left: 3px solid var(--accent2); }
+  .rule-deny  { border-left: 3px solid var(--accent3); }
+
+  /* PACKET TABLE */
+  .pkt { cursor: pointer; }
+  .pkt:hover td { background: #0f2530; }
+  .pkt.selected td { background: #0f3040; }
+  .proto-tcp  { color: var(--accent); }
+  .proto-udp  { color: var(--accent2); }
+  .proto-icmp { color: var(--warn); }
+  .proto-http { color: #bb88ff; }
+  .proto-dns  { color: #ff88aa; }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  .spinner {
+    display: inline-block; width: 14px; height: 14px;
+    border: 2px solid var(--border); border-top-color: var(--accent);
+    border-radius: 50%; animation: spin 0.8s linear infinite; vertical-align: middle;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* DASHBOARD CHART */
+  .chart-bar-wrap { margin-top: 10px; }
+  .chart-row { display: flex; align-items: center; gap: 10px; margin-bottom: 7px; font-family: 'Share Tech Mono'; font-size: 11px; }
+  .chart-label { width: 90px; color: var(--muted); text-align: right; }
+  .chart-bar-bg { flex: 1; background: #0a1e2b; border-radius: 3px; height: 16px; overflow: hidden; }
+  .chart-bar { height: 100%; border-radius: 3px; transition: width 1s ease; }
+  .chart-val { width: 40px; color: var(--text); }
+
+  .tag { display: inline-block; padding: 2px 8px; border-radius: 3px; font-size: 10px; font-family: 'Share Tech Mono'; margin: 1px; }
+
+  #detail-pane { border-top: 1px solid var(--border); margin-top: 12px; padding-top: 12px; display: none; }
+  #detail-pane.show { display: block; }
+
+  .progress-bar { height: 4px; background: #0a1e2b; border-radius: 2px; overflow: hidden; margin-top: 8px; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 2px; transition: width 0.3s; }
+
+  @media (max-width: 600px) {
+    .tab { padding: 8px 10px; font-size: 9px; }
+    header h1 { font-size: 22px; }
+    .metrics { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+   <!-- Profile section  -->
+      <div class="profile-card">
+    
+    <!-- Profile Image -->
+    <img src="profile.jpg.jpeg">
+
+    <!-- Name -->
+    <h2>chandan gond</h2>
+
+    <!-- Course -->
+    <p>B.TECH CSE (AI & ML)</p>
+    <!-- about me -->
+     <p>
+        I am a passionate and dedicated B.Tech Computer Science Engineering student 
+  specializing in Artificial Intelligence & Machine Learning (AI & ML). 
+  I also have a strong interest in Cybersecurity and Network Security Engineering. 
+  I enjoy learning about ethical hacking, network protection, system security, 
+  and modern technologies. Along with my interest in web development and programming, 
+  I am always eager to build innovative projects and solve real-world problems. 
+  I am a quick learner, hardworking, and continuously improving my technical 
+  and problem-solving skills.
+
+     </p>
+    
+     
+
+    <!-- Button -->
+    <a href="#" class="btn">View Profile</a>
+
+  </div>
+
+
+
+
+
+
+<div id="app">
+  <header>
+    <h1>⚡ NETSEC SUITE</h1>
+    <p>// NETWORK SECURITY LEARNING LAB — v2.0 // SIMULATED ENVIRONMENT //</p>
+  </header>
+
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('dashboard')">📊 DASHBOARD</div>
+    <div class="tab" onclick="switchTab('scanner')">🔍 PORT SCANNER</div>
+    <div class="tab" onclick="switchTab('sniffer')">📡 PACKET SNIFFER</div>
+    <div class="tab" onclick="switchTab('firewall')">🛡️ FIREWALL</div>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div id="tab-dashboard" class="panel active">
+    <div class="metrics">
+      <div class="metric"><div class="val" id="d-hosts">0</div><div class="lbl">HOSTS SCANNED</div></div>
+      <div class="metric"><div class="val" id="d-ports">0</div><div class="lbl">OPEN PORTS</div></div>
+      <div class="metric"><div class="val" id="d-pkts">0</div><div class="lbl">PACKETS CAPTURED</div></div>
+      <div class="metric"><div class="val" id="d-rules">0</div><div class="lbl">FIREWALL RULES</div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="dot"></span> NETWORK TRAFFIC OVERVIEW</div>
+      <div class="chart-bar-wrap" id="traffic-chart">
+        <!-- filled by JS -->
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="dot"></span> COMMON PORTS — QUICK REFERENCE</div>
+      <table>
+        <tr><th>PORT</th><th>SERVICE</th><th>PROTOCOL</th><th>RISK LEVEL</th></tr>
+        <tr><td>21</td><td>FTP</td><td>TCP</td><td><span class="badge badge-open">HIGH</span></td></tr>
+        <tr><td>22</td><td>SSH</td><td>TCP</td><td><span class="badge badge-filtered">MEDIUM</span></td></tr>
+        <tr><td>23</td><td>Telnet</td><td>TCP</td><td><span class="badge badge-open">CRITICAL</span></td></tr>
+        <tr><td>25</td><td>SMTP</td><td>TCP</td><td><span class="badge badge-filtered">MEDIUM</span></td></tr>
+        <tr><td>53</td><td>DNS</td><td>UDP/TCP</td><td><span class="badge badge-filtered">LOW</span></td></tr>
+        <tr><td>80</td><td>HTTP</td><td>TCP</td><td><span class="badge badge-filtered">LOW</span></td></tr>
+        <tr><td>443</td><td>HTTPS</td><td>TCP</td><td><span class="badge badge-closed">SAFE</span></td></tr>
+        <tr><td>3306</td><td>MySQL</td><td>TCP</td><td><span class="badge badge-open">HIGH</span></td></tr>
+        <tr><td>3389</td><td>RDP</td><td>TCP</td><td><span class="badge badge-open">CRITICAL</span></td></tr>
+        <tr><td>8080</td><td>HTTP-Alt</td><td>TCP</td><td><span class="badge badge-filtered">LOW</span></td></tr>
+      </table>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="dot"></span> OSI MODEL — QUICK REFERENCE</div>
+      <table>
+        <tr><th>LAYER</th><th>NAME</th><th>PROTOCOLS</th><th>TOOLS</th></tr>
+        <tr><td>7</td><td>Application</td><td>HTTP, FTP, DNS, SMTP</td><td>Wireshark, Burp Suite</td></tr>
+        <tr><td>6</td><td>Presentation</td><td>SSL/TLS, JPEG</td><td>OpenSSL</td></tr>
+        <tr><td>5</td><td>Session</td><td>NetBIOS, RPC</td><td>Wireshark</td></tr>
+        <tr><td>4</td><td>Transport</td><td>TCP, UDP</td><td>Nmap, Netcat</td></tr>
+        <tr><td>3</td><td>Network</td><td>IP, ICMP, ARP</td><td>Ping, Traceroute</td></tr>
+        <tr><td>2</td><td>Data Link</td><td>Ethernet, MAC</td><td>Wireshark</td></tr>
+        <tr><td>1</td><td>Physical</td><td>Cables, Signals</td><td>Packet Tracer</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- PORT SCANNER -->
+  <div id="tab-scanner" class="panel">
+    <div class="card">
+      <div class="card-title"><span class="dot"></span> NMAP-STYLE PORT SCANNER (SIMULATED)</div>
+      <div class="row">
+        <input id="scan-ip" type="text" placeholder="Target IP / Hostname (e.g. 192.168.1.1)" value="192.168.1.1">
+        <select id="scan-type">
+          <option value="quick">Quick Scan (Top 20)</option>
+          <option value="full">Full Scan (Top 100)</option>
+          <option value="stealth">Stealth SYN Scan</option>
+          <option value="udp">UDP Scan</option>
+          <option value="vuln">Vulnerability Scan</option>
+        </select>
+      </div>
+      <div class="row">
+        <input id="scan-ports" type="text" placeholder="Custom ports (e.g. 22,80,443,8080) — optional">
+        <select id="scan-os">
+          <option value="">OS Detection: Off</option>
+          <option value="on">OS Detection: On</option>
+        </select>
+      </div>
+      <div style="margin-bottom:12px;">
+        <button class="btn btn-primary" onclick="startScan()">▶ START SCAN</button>
+        <button class="btn btn-danger" onclick="clearScan()" style="margin-left:8px;">✕ CLEAR</button>
+      </div>
+      <div id="scan-progress" style="display:none;">
+        <div style="font-family:'Share Tech Mono';font-size:12px;color:var(--warn);margin-bottom:6px;" id="scan-status">Scanning...</div>
+        <div class="progress-bar"><div class="progress-fill" id="scan-bar" style="width:0%"></div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="dot"></span> SCAN RESULTS</div>
+      <div class="terminal" id="scan-terminal">
+<span class="dim">// Ready. Configure target and press START SCAN.
+// Educational simulation — does not perform real network scans.</span>
+      </div>
+    </div>
+
+    <div class="card" id="scan-table-card" style="display:none;">
+      <div class="card-title"><span class="dot"></span> DISCOVERED PORTS</div>
+      <table id="scan-table">
+        <tr><th>PORT</th><th>STATE</th><th>SERVICE</th><th>VERSION</th><th>RISK</th></tr>
+      </table>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="dot"></span> NMAP COMMAND BUILDER</div>
+      <div style="font-family:'Share Tech Mono';font-size:12px;color:var(--accent2);padding:10px;background:#020c10;border-radius:6px;" id="nmap-cmd">
+        nmap 192.168.1.1
+      </div>
+      <div style="margin-top:8px;font-size:12px;color:var(--muted);">
+        ↑ This is the real Nmap command you'd use for the selected options.
+      </div>
+    </div>
+  </div>
+
+  <!-- PACKET SNIFFER -->
+  <div id="tab-sniffer" class="panel">
+    <div class="card">
+      <div class="card-title"><span class="dot"></span> WIRESHARK-STYLE PACKET ANALYZER (SIMULATED)</div>
+      <div class="row">
+        <select id="sniff-iface">
+          <option>eth0 — Ethernet</option>
+          <option>wlan0 — Wi-Fi</option>
+          <option>lo — Loopback</option>
+          <option>any — All Interfaces</option>
+        </select>
+        <input id="sniff-filter" type="text" placeholder="Display filter (e.g. tcp, udp, ip.addr==192.168.1.1, http)">
+      </div>
+      <div>
+        <button class="btn btn-success" id="sniff-btn" onclick="toggleSniff()">▶ START CAPTURE</button>
+        <button class="btn btn-warn" onclick="clearSniff()" style="margin-left:8px;">✕ CLEAR</button>
+      </div>
+      <div style="margin-top:8px;font-size:12px;color:var(--muted);" id="sniff-info">0 packets captured</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="dot"></span> CAPTURED PACKETS</div>
+      <div style="overflow-x:auto;">
+        <table id="pkt-table">
+          <tr><th>#</th><th>TIME</th><th>SRC</th><th>DST</th><th>PROTO</th><th>LEN</th><th>INFO</th></tr>
+        </table>
+      </div>
+      <div id="detail-pane">
+        <div class="card-title" style="margin-bottom:8px;"><span class="dot"></span> PACKET DETAIL</div>
+        <div class="terminal" id="pkt-detail" style="min-height:80px;"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="dot"></span> PROTOCOL BREAKDOWN</div>
+      <div class="chart-bar-wrap" id="proto-chart"></div>
+    </div>
+  </div>
+
+  <!-- FIREWALL -->
+  <div id="tab-firewall" class="panel">
+    <div class="card">
+      <div class="card-title"><span class="dot"></span> FIREWALL RULE SIMULATOR</div>
+      <div id="rule-list"></div>
+      <button class="btn btn-primary" onclick="addRule()" style="margin-top:8px;">+ ADD RULE</button>
+      <button class="btn btn-success" onclick="applyRules()" style="margin-left:8px;">⚡ APPLY RULES</button>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="dot"></span> TEST PACKET</div>
+      <div class="row">
+        <input id="test-src" type="text" placeholder="Source IP (e.g. 10.0.0.1)" value="10.0.0.5">
+        <input id="test-dst" type="text" placeholder="Dest IP (e.g. 192.168.1.1)" value="192.168.1.100">
+        <select id="test-proto">
+          <option>TCP</option><option>UDP</option><option>ICMP</option>
+        </select>
+        <input id="test-port" type="number" placeholder="Dest Port" value="80" style="max-width:100px;">
+      </div>
+      <button class="btn btn-primary" onclick="testPacket()">🧪 TEST PACKET</button>
+    </div>
+
+    <div class="card" id="fw-result-card" style="display:none;">
+      <div class="card-title"><span class="dot"></span> RESULT</div>
+      <div class="terminal" id="fw-terminal" style="min-height:80px;"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="dot"></span> IPTABLES COMMAND OUTPUT</div>
+      <div class="terminal" id="iptables-out" style="min-height:80px;">
+<span class="dim">// Apply rules to see iptables commands</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ============ GLOBAL STATE ============
+let scanRunning = false;
+let sniffRunning = false;
+let sniffInterval = null;
+let pktCount = 0;
+let packets = [];
+let rules = [];
+let stats = { hosts: 0, ports: 0, pkts: 0, rules: 3 };
+let protoCounts = { TCP:0, UDP:0, ICMP:0, HTTP:0, DNS:0 };
+
+// ============ TAB SWITCH ============
+function switchTab(t) {
+  document.querySelectorAll('.tab').forEach(e => e.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(e => e.classList.remove('active'));
+  document.getElementById('tab-' + t).classList.add('active');
+  event.target.classList.add('active');
+  updateDashboard();
+}
+
+// ============ DASHBOARD ============
+const trafficData = [
+  { label: 'HTTP/S', val: 62, color: '#00d4ff' },
+  { label: 'DNS', val: 18, color: '#ff88aa' },
+  { label: 'SSH', val: 8, color: '#00ff88' },
+  { label: 'SMTP', val: 6, color: '#ffb347' },
+  { label: 'Other', val: 6, color: '#4a7a8a' },
+];
+function renderTrafficChart() {
+  const c = document.getElementById('traffic-chart');
+  c.innerHTML = trafficData.map(d => `
+    <div class="chart-row">
+      <div class="chart-label">${d.label}</div>
+      <div class="chart-bar-bg"><div class="chart-bar" style="width:${d.val}%;background:${d.color}"></div></div>
+      <div class="chart-val">${d.val}%</div>
+    </div>`).join('');
+}
+function updateDashboard() {
+  document.getElementById('d-hosts').textContent = stats.hosts;
+  document.getElementById('d-ports').textContent = stats.ports;
+  document.getElementById('d-pkts').textContent = stats.pkts;
+  document.getElementById('d-rules').textContent = rules.length || stats.rules;
+}
+renderTrafficChart();
+updateDashboard();
+
+// ============ PORT SCANNER ============
+const serviceMap = {
+  21:'FTP', 22:'SSH', 23:'Telnet', 25:'SMTP', 53:'DNS', 80:'HTTP',
+  110:'POP3', 135:'RPC', 139:'NetBIOS', 143:'IMAP', 443:'HTTPS',
+  445:'SMB', 993:'IMAPS', 995:'POP3S', 1433:'MSSQL', 1521:'Oracle',
+  3306:'MySQL', 3389:'RDP', 5432:'PostgreSQL', 5900:'VNC',
+  6379:'Redis', 8080:'HTTP-Alt', 8443:'HTTPS-Alt', 9200:'Elasticsearch',
+  27017:'MongoDB', 6443:'K8s API'
+};
+const versionMap = {
+  22:'OpenSSH 8.9p1', 80:'Apache httpd 2.4.54', 443:'nginx 1.22.1',
+  21:'vsftpd 3.0.5', 3306:'MySQL 8.0.31', 3389:'Microsoft RDP',
+  53:'BIND 9.18', 25:'Postfix smtpd', 8080:'Jetty 9.4.48'
+};
+const riskMap = {
+  21:'HIGH', 22:'MEDIUM', 23:'CRITICAL', 25:'MEDIUM', 53:'LOW',
+  80:'LOW', 110:'MEDIUM', 135:'HIGH', 139:'HIGH', 143:'MEDIUM',
+  443:'SAFE', 445:'CRITICAL', 1433:'HIGH', 3306:'HIGH', 3389:'CRITICAL',
+  5900:'HIGH', 6379:'CRITICAL', 8080:'LOW', 27017:'CRITICAL'
+};
+const topPorts = [21,22,23,25,53,80,110,135,139,143,443,445,993,995,3306,3389,5432,5900,8080,8443];
+const top100Extra = [81,88,119,194,389,631,873,1080,1433,1521,2049,2082,2083,2083,2222,2375,3000,4444,4848,5000,5432,5800,5985,6379,7001,8000,8008,8443,8888,9000,9090,9200,9443,9999,27017];
+
+function getNmapCmd() {
+  const ip = document.getElementById('scan-ip').value || '192.168.1.1';
+  const t = document.getElementById('scan-type').value;
+  const os = document.getElementById('scan-os').value === 'on' ? ' -O' : '';
+  const cp = document.getElementById('scan-ports').value;
+  const pArg = cp ? ` -p ${cp}` : '';
+  const cmds = {
+    quick: `nmap -F${os}${pArg} ${ip}`,
+    full: `nmap -p 1-1000${os}${pArg} ${ip}`,
+    stealth: `nmap -sS -Pn${os}${pArg} ${ip}`,
+    udp: `sudo nmap -sU${os}${pArg} ${ip}`,
+    vuln: `nmap -sV --script=vuln${os}${pArg} ${ip}`
+  };
+  return cmds[t] || cmds.quick;
+}
+
+document.getElementById('scan-ip').addEventListener('input', () => {
+  document.getElementById('nmap-cmd').textContent = getNmapCmd();
+});
+document.getElementById('scan-type').addEventListener('change', () => {
+  document.getElementById('nmap-cmd').textContent = getNmapCmd();
+});
+document.getElementById('scan-os').addEventListener('change', () => {
+  document.getElementById('nmap-cmd').textContent = getNmapCmd();
+});
+
+function clearScan() {
+  document.getElementById('scan-terminal').innerHTML = '<span class="dim">// Ready.</span>';
+  document.getElementById('scan-table-card').style.display = 'none';
+  document.getElementById('scan-progress').style.display = 'none';
+}
+
+function startScan() {
+  if (scanRunning) return;
+  scanRunning = true;
+  const ip = document.getElementById('scan-ip').value || '192.168.1.1';
+  const type = document.getElementById('scan-type').value;
+  const customPorts = document.getElementById('scan-ports').value;
+  const osDetect = document.getElementById('scan-os').value === 'on';
+
+  let portList = [];
+  if (customPorts) {
+    portList = customPorts.split(',').map(p => parseInt(p.trim())).filter(p => !isNaN(p));
+  } else if (type === 'quick') {
+    portList = topPorts;
+  } else {
+    portList = [...topPorts, ...top100Extra].slice(0, type === 'full' ? 50 : 20);
+  }
+
+  const term = document.getElementById('scan-terminal');
+  const bar = document.getElementById('scan-bar');
+  const statusEl = document.getElementById('scan-status');
+  const progress = document.getElementById('scan-progress');
+  progress.style.display = 'block';
+  document.getElementById('scan-table-card').style.display = 'none';
+
+  const typeLabels = { quick:'Quick Scan', full:'Full TCP Scan', stealth:'Stealth SYN Scan', udp:'UDP Scan', vuln:'Vulnerability Scan' };
+  term.innerHTML = `<span class="info">Starting ${typeLabels[type]}...</span>
+<span class="dim">Target: ${ip}</span>
+<span class="dim">Ports: ${portList.join(', ')}</span>
+<span class="dim">═══════════════════════════════════════════</span>
+`;
+
+  const openPorts = [];
+  let i = 0;
+  const openChance = Math.random() * 0.3 + 0.15; // 15–45% open
+
+  function scanNext() {
+    if (i >= portList.length) {
+      finishScan(ip, openPorts, osDetect, portList);
+      return;
+    }
+    const port = portList[i];
+    const pct = Math.round((i / portList.length) * 100);
+    bar.style.width = pct + '%';
+    statusEl.textContent = `Scanning port ${port}... (${pct}%)`;
+
+    const rand = Math.random();
+    let state, cls;
+    if (rand < openChance) {
+      state = 'open'; cls = 'ok'; openPorts.push(port);
+    } else if (rand < openChance + 0.1) {
+      state = 'filtered'; cls = 'warn';
+    } else {
+      state = 'closed'; cls = 'err';
+    }
+
+    if (state === 'open' || state === 'filtered') {
+      const svc = serviceMap[port] || 'unknown';
+      term.innerHTML += `<span class="${cls}">PORT ${port}/tcp   ${state.padEnd(10)} ${svc}</span>\n`;
+      term.scrollTop = term.scrollHeight;
+    }
+    i++;
+    setTimeout(scanNext, 60 + Math.random() * 80);
+  }
+  scanNext();
+
+  function finishScan(ip, opens, osDetect, all) {
+    bar.style.width = '100%';
+    statusEl.textContent = 'Scan complete!';
+    term.innerHTML += `<span class="dim">═══════════════════════════════════════════</span>
+<span class="info">Scan complete. ${opens.length} open ports found on ${ip}.</span>
+<span class="dim">Not shown: ${all.length - opens.length} closed/filtered ports</span>`;
+    if (osDetect) {
+      const oses = ['Linux 4.x-5.x','Windows Server 2019','Ubuntu 22.04','FreeBSD 13'];
+      term.innerHTML += `\n<span class="warn">OS DETECTION: ${oses[Math.floor(Math.random()*oses.length)]} (accuracy: ${75+Math.floor(Math.random()*20)}%)</span>`;
+    }
+
+    // Build table
+    if (opens.length > 0) {
+      const tbl = document.getElementById('scan-table');
+      tbl.innerHTML = '<tr><th>PORT</th><th>STATE</th><th>SERVICE</th><th>VERSION</th><th>RISK</th></tr>';
+      opens.forEach(p => {
+        const svc = serviceMap[p] || 'unknown';
+        const ver = versionMap[p] || '—';
+        const risk = riskMap[p] || 'LOW';
+        const rCls = risk === 'CRITICAL' ? 'badge-open' : risk === 'HIGH' ? 'badge-open' : risk === 'MEDIUM' ? 'badge-filtered' : risk === 'SAFE' ? 'badge-closed' : 'badge-filtered';
+        tbl.innerHTML += `<tr><td>${p}/tcp</td><td><span class="badge badge-open">OPEN</span></td><td>${svc}</td><td>${ver}</td><td><span class="badge ${rCls}">${risk}</span></td></tr>`;
+      });
+      document.getElementById('scan-table-card').style.display = 'block';
+    }
+
+    stats.hosts++;
+    stats.ports += opens.length;
+    updateDashboard();
+    scanRunning = false;
+  }
+}
+
+// ============ PACKET SNIFFER ============
+const protoColors = { TCP:'proto-tcp', UDP:'proto-udp', ICMP:'proto-icmp', HTTP:'proto-http', DNS:'proto-dns' };
+const ips = ['192.168.1.1','192.168.1.101','192.168.1.5','10.0.0.1','10.0.0.55','8.8.8.8','8.8.4.4','172.217.3.110','93.184.216.34','151.101.1.69'];
+const packetTemplates = [
+  { proto:'TCP', info:'SYN → port 80', sport:()=>rnd(1024,65535), dport:80 },
+  { proto:'HTTP', info:'GET / HTTP/1.1', sport:()=>rnd(1024,65535), dport:80 },
+  { proto:'HTTPS', info:'TLS Application Data', sport:()=>rnd(1024,65535), dport:443 },
+  { proto:'DNS', info:'Query: google.com', sport:()=>rnd(1024,65535), dport:53 },
+  { proto:'UDP', info:'UDP Datagram', sport:()=>rnd(1024,65535), dport:rnd(1,1024) },
+  { proto:'ICMP', info:'Echo (ping) request', sport:()=>0, dport:0 },
+  { proto:'TCP', info:'ACK seq=1234 ack=5678', sport:()=>rnd(1024,65535), dport:443 },
+  { proto:'DNS', info:'Response: 142.250.80.46', sport:53, dport:()=>rnd(1024,65535) },
+  { proto:'TCP', info:'FIN,ACK → port 22', sport:()=>rnd(1024,65535), dport:22 },
+  { proto:'HTTP', info:'POST /api/login HTTP/1.1', sport:()=>rnd(1024,65535), dport:8080 },
+];
+function rnd(a,b){ return Math.floor(Math.random()*(b-a))+a; }
+
+let pktSelected = null;
+function toggleSniff() {
+  sniffRunning = !sniffRunning;
+  const btn = document.getElementById('sniff-btn');
+  if (sniffRunning) {
+    btn.textContent = '⏹ STOP CAPTURE';
+    btn.className = 'btn btn-danger';
+    sniffInterval = setInterval(generatePacket, 600 + Math.random() * 400);
+  } else {
+    btn.textContent = '▶ START CAPTURE';
+    btn.className = 'btn btn-success';
+    clearInterval(sniffInterval);
+  }
+}
+
+function clearSniff() {
+  sniffRunning = false;
+  clearInterval(sniffInterval);
+  document.getElementById('sniff-btn').textContent = '▶ START CAPTURE';
+  document.getElementById('sniff-btn').className = 'btn btn-success';
+  pktCount = 0; packets = [];
+  protoCounts = { TCP:0, UDP:0, ICMP:0, HTTP:0, DNS:0 };
+  document.getElementById('pkt-table').innerHTML = '<tr><th>#</th><th>TIME</th><th>SRC</th><th>DST</th><th>PROTO</th><th>LEN</th><th>INFO</th></tr>';
+  document.getElementById('sniff-info').textContent = '0 packets captured';
+  document.getElementById('detail-pane').classList.remove('show');
+  renderProtoChart();
+}
+
+function generatePacket() {
+  const filter = document.getElementById('sniff-filter').value.trim().toLowerCase();
+  const tpl = packetTemplates[Math.floor(Math.random() * packetTemplates.length)];
+  const src = ips[Math.floor(Math.random() * ips.length)];
+  const dst = ips[Math.floor(Math.random() * ips.length)];
+  const sp = typeof tpl.sport === 'function' ? tpl.sport() : tpl.sport;
+  const dp = typeof tpl.dport === 'function' ? tpl.dport() : tpl.dport;
+  const len = rnd(40, 1500);
+  const now = new Date();
+  const time = `${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}:${now.getSeconds().toString().padStart(2,'0')}.${now.getMilliseconds().toString().padStart(3,'0')}`;
+  const proto = tpl.proto;
+
+  // Apply filter
+  if (filter) {
+    const protoMatch = filter === proto.toLowerCase();
+    const ipMatch = filter.startsWith('ip.addr==') && (src === filter.split('==')[1] || dst === filter.split('==')[1]);
+    const portMatch = filter.startsWith('tcp.port==') && (dp.toString() === filter.split('==')[1] || sp.toString() === filter.split('==')[1]);
+    if (!protoMatch && !ipMatch && !portMatch) return;
+  }
+
+  pktCount++;
+  const pkt = { id: pktCount, time, src, dst, proto, sp, dp, len, info: tpl.info };
+  packets.push(pkt);
+  if (packets.length > 200) packets.shift();
+
+  // Update proto counts
+  const pk = Object.keys(protoCounts).find(k => proto.toUpperCase().startsWith(k)) || 'TCP';
+  protoCounts[pk]++;
+
+  // Add row
+  const tbl = document.getElementById('pkt-table');
+  const colorCls = protoColors[proto] || 'proto-tcp';
+  const tr = document.createElement('tr');
+  tr.className = 'pkt';
+  tr.dataset.id = pkt.id;
+  tr.innerHTML = `<td>${pkt.id}</td><td>${time}</td><td>${src}</td><td>${dst}</td><td class="${colorCls}">${proto}</td><td>${len}</td><td>${tpl.info}</td>`;
+  tr.onclick = () => showPktDetail(pkt, tr);
+  tbl.appendChild(tr);
+  if (tbl.rows.length > 60) tbl.deleteRow(1);
+  tbl.parentElement.scrollTop = tbl.parentElement.scrollHeight;
+
+  stats.pkts = pktCount;
+  document.getElementById('sniff-info').textContent = `${pktCount} packets captured`;
+  updateDashboard();
+  renderProtoChart();
+}
+
+function showPktDetail(pkt, tr) {
+  document.querySelectorAll('.pkt').forEach(r => r.classList.remove('selected'));
+  tr.classList.add('selected');
+  pktSelected = pkt;
+  const dp = document.getElementById('detail-pane');
+  dp.classList.add('show');
+  document.getElementById('pkt-detail').innerHTML =
+`<span class="info">Frame ${pkt.id}: ${pkt.len} bytes on wire</span>
+<span class="ok">▼ Ethernet II</span>
+  <span class="dim">  Destination: ff:ff:ff:ff:ff:ff</span>
+  <span class="dim">  Source: aa:bb:cc:dd:ee:ff</span>
+  <span class="dim">  Type: IPv4 (0x0800)</span>
+<span class="ok">▼ Internet Protocol Version 4</span>
+  <span class="dim">  Source: ${pkt.src}</span>
+  <span class="dim">  Destination: ${pkt.dst}</span>
+  <span class="dim">  TTL: ${rnd(40,128)}, Protocol: ${pkt.proto}</span>
+<span class="ok">▼ ${pkt.proto} Segment</span>
+  <span class="dim">  Src Port: ${pkt.sp} → Dst Port: ${pkt.dp}</span>
+  <span class="dim">  Info: ${pkt.info}</span>`;
+}
+
+function renderProtoChart() {
+  const total = Object.values(protoCounts).reduce((a,b)=>a+b,0) || 1;
+  const colors = { TCP:'#00d4ff', UDP:'#00ff88', ICMP:'#ffb347', HTTP:'#bb88ff', DNS:'#ff88aa' };
+  document.getElementById('proto-chart').innerHTML = Object.entries(protoCounts).map(([k,v]) => `
+    <div class="chart-row">
+      <div class="chart-label">${k}</div>
+      <div class="chart-bar-bg"><div class="chart-bar" style="width:${Math.round(v/total*100)}%;background:${colors[k]}"></div></div>
+      <div class="chart-val">${v}</div>
+    </div>`).join('');
+}
+renderProtoChart();
+
+// ============ FIREWALL ============
+let ruleId = 0;
+function defaultRules() {
+  rules = [
+    { id: ++ruleId, action:'ALLOW', proto:'TCP', src:'192.168.1.0/24', dst:'ANY', port:'80,443', comment:'Allow web traffic' },
+    { id: ++ruleId, action:'ALLOW', proto:'TCP', src:'192.168.1.0/24', dst:'ANY', port:'22', comment:'Allow SSH' },
+    { id: ++ruleId, action:'DENY',  proto:'ANY', src:'ANY',            dst:'ANY', port:'23', comment:'Block Telnet' },
+  ];
+  renderRules();
+}
+function renderRules() {
+  const list = document.getElementById('rule-list');
+  list.innerHTML = '';
+  rules.forEach((r, idx) => {
+    const div = document.createElement('div');
+    div.className = 'rule ' + (r.action === 'ALLOW' ? 'rule-allow' : 'rule-deny');
+    div.innerHTML = `
+      <span class="rule-num">#${idx+1}</span>
+      <select onchange="rules[${idx}].action=this.value;renderRules()">
+        <option ${r.action==='ALLOW'?'selected':''}>ALLOW</option>
+        <option ${r.action==='DENY'?'selected':''}>DENY</option>
+      </select>
+      <select onchange="rules[${idx}].proto=this.value">
+        <option ${r.proto==='TCP'?'selected':''}>TCP</option>
+        <option ${r.proto==='UDP'?'selected':''}>UDP</option>
+        <option ${r.proto==='ICMP'?'selected':''}>ICMP</option>
+        <option ${r.proto==='ANY'?'selected':''}>ANY</option>
+      </select>
+      <input value="${r.src}" placeholder="Source IP/CIDR" onchange="rules[${idx}].src=this.value">
+      <input value="${r.dst}" placeholder="Dest IP/CIDR" onchange="rules[${idx}].dst=this.value">
+      <input value="${r.port}" placeholder="Port(s)" onchange="rules[${idx}].port=this.value" style="max-width:100px;">
+      <input value="${r.comment}" placeholder="Comment" onchange="rules[${idx}].comment=this.value" style="flex:2;">
+      <button class="del-btn" onclick="deleteRule(${idx})">✕</button>
+    `;
+    list.appendChild(div);
+  });
+  stats.rules = rules.length;
+  updateDashboard();
+}
+function addRule() {
+  rules.push({ id: ++ruleId, action:'ALLOW', proto:'TCP', src:'ANY', dst:'ANY', port:'', comment:'New rule' });
+  renderRules();
+}
+function deleteRule(idx) { rules.splice(idx,1); renderRules(); }
+
+function applyRules() {
+  const out = document.getElementById('iptables-out');
+  out.innerHTML = '<span class="ok">iptables -F  # Flush existing rules</span>\n';
+  rules.forEach(r => {
+    const act = r.action === 'ALLOW' ? 'ACCEPT' : 'DROP';
+    const protoStr = r.proto !== 'ANY' ? `-p ${r.proto.toLowerCase()} ` : '';
+    const srcStr = r.src !== 'ANY' ? `-s ${r.src} ` : '';
+    const dstStr = r.dst !== 'ANY' ? `-d ${r.dst} ` : '';
+    const portStr = r.port ? `--dport ${r.port} ` : '';
+    out.innerHTML += `<span class="${act==='ACCEPT'?'ok':'err'}">iptables -A FORWARD ${protoStr}${srcStr}${dstStr}${portStr}-j ${act}  # ${r.comment}</span>\n`;
+  });
+  out.innerHTML += '<span class="info">iptables -A FORWARD -j DROP  # Default deny</span>';
+}
+
+function testPacket() {
+  const src = document.getElementById('test-src').value;
+  const dst = document.getElementById('test-dst').value;
+  const proto = document.getElementById('test-proto').value;
+  const port = parseInt(document.getElementById('test-port').value) || 0;
+  const card = document.getElementById('fw-result-card');
+  const term = document.getElementById('fw-terminal');
+  card.style.display = 'block';
+
+  let verdict = 'DENY (default drop)';
+  let verdictCls = 'err';
+  let matchedRule = null;
+
+  for (let i = 0; i < rules.length; i++) {
+    const r = rules[i];
+    const protoMatch = r.proto === 'ANY' || r.proto === proto;
+    const srcMatch = r.src === 'ANY' || matchCIDR(src, r.src);
+    const dstMatch = r.dst === 'ANY' || matchCIDR(dst, r.dst);
+    const portMatch = !r.port || r.port.split(',').map(p=>parseInt(p.trim())).includes(port);
+    if (protoMatch && srcMatch && dstMatch && portMatch) {
+      matchedRule = { rule: r, idx: i+1 };
+      if (r.action === 'ALLOW') { verdict = 'ALLOW ✓'; verdictCls = 'ok'; }
+      else { verdict = 'DENY ✗'; verdictCls = 'err'; }
+      break;
+    }
+  }
+
+  term.innerHTML = `<span class="dim">Packet: ${src} → ${dst} [${proto}:${port}]</span>
+${matchedRule
+  ? `<span class="dim">Matched Rule #${matchedRule.idx}: ${matchedRule.rule.comment}</span>`
+  : '<span class="dim">No rule matched → default policy applied</span>'}
+<span class="${verdictCls}" style="font-size:18px;font-family:Orbitron">VERDICT: ${verdict}</span>`;
+}
+
+function matchCIDR(ip, cidr) {
+  if (cidr === 'ANY' || cidr === ip) return true;
+  if (cidr.includes('/')) {
+    try {
+      const [net, bits] = cidr.split('/');
+      const mask = ~((1 << (32 - parseInt(bits))) - 1);
+      const ipNum = ip.split('.').reduce((a, b) => (a << 8) | parseInt(b), 0);
+      const netNum = net.split('.').reduce((a, b) => (a << 8) | parseInt(b), 0);
+      return (ipNum & mask) === (netNum & mask);
+    } catch { return false; }
+  }
+  return false;
+}
+
+defaultRules();
+applyRules();
+
+// Update nmap cmd on load
+document.getElementById('nmap-cmd').textContent = getNmapCmd();
+</script>
+</body>
+</html>
