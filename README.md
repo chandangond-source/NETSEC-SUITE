@@ -3,11 +3,19 @@ NETSEC SUITE is an all-in-one cybersecurity and network security platform design
 
 <div align="center">
 
-<img src="images/1.png" width="45%" style="border:2px solid #00ffcc; border-radius:10px; margin:10px;">
-<img src="images/2.png" width="45%" style="border:2px solid #00ffcc; border-radius:10px; margin:10px;">
+<img src="image/1.png" width="90%" style="border:2px solid #00ffcc; border-radius:10px; margin:10px;">
+<br/>
+<br/>
+<img src="image/2.png" width="90%" style="border:2px solid #00ffcc; border-radius:10px; margin:10px;">
+<br/>
+<br/>
 
-<img src="images/3.png" width="45%" style="border:2px solid #00ffcc; border-radius:10px; margin:10px;">
-<img src="images/4.png" width="45%" style="border:2px solid #00ffcc; border-radius:10px; margin:10px;">
-<img src="images/5.png" width="45%" style="border:2px solid #00ffcc; border-radius:10px; margin:10px;">
+<img src="image/3.png" width="90%" style="border:2px solid #00ffcc; border-radius:10px; margin:10px;">
+<br/>
+<br/>
+<img src="image/4.png" width="90%" style="border:2px solid #00ffcc; border-radius:10px; margin:10px;">
+<br/>
+<br/>
+<img src="image/5.png" width="90%" style="border:2px solid #00ffcc; border-radius:10px; margin:10px;">
 
 </div>
